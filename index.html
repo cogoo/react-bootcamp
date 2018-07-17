@@ -18,17 +18,43 @@
     <script type="text/babel">
 
         function FriendsList(props) {
+
+            const list = props.list;
+            const active = list.filter((friend)=>{return friend.active === true});
+            const inActive = list.filter((friend)=>{return friend.active === false});
+
             return (
+
+               <div>
+                <h1>
+                    Active Friends
+                </h1>
+
                 <ul>
-                    {props.list.map((name)=> (
-                        <li key={name} >
-                            {name}
+                    {active.map((friend)=> (
+                        <li key={friend.name} >
+                            {friend.name}
                             <span>
-                                <button onClick={() => props.onRemoveFriend(name)} >Remove</button>
+                                <button onClick={() => props.onRemoveFriend(friend.name)} >Remove</button>
+                                <button onClick={() => props.onToggleFriend(friend.name)} >Deactivate</button>
                             </span>
                         </li>
                     ))}
                 </ul>
+
+                <h1>Inactive Friends</h1>
+
+                <ul>
+                    {inActive.map((friend)=> (
+                        <li key={friend.name} >
+                            {friend.name}
+                            <span>
+                                <button onClick={() => props.onToggleFriend(friend.name)} >Activate</button>
+                            </span>
+                        </li>
+                    ))}
+                </ul>
+               </div>
             )
         }
 
@@ -38,21 +64,41 @@
                 super(props)
 
                 this.state = {
-                    friends: ['Ann', 'Tommy', 'Jamal'],
+                    friends: [{name: 'Ann', active: true}, {name: 'Jamal', active: true},{name: 'Carry', active: true}],
                     input: ''
                 };
 
+                this.updateInput = this.updateInput.bind(this);
+                this.handleClearAll = this.handleClearAll.bind(this);
                 this.handleAddFriend = this.handleAddFriend.bind(this);
                 this.handleRemoveFriend = this.handleRemoveFriend.bind(this);
-                this.updateInput = this.updateInput.bind(this);
+                this.handleToggleFriend = this.handleToggleFriend.bind(this);
+
+                console.log('--constructor--');
+            }
+
+            componentDidMount() {
+                console.log('--componentDidMount--');
+
+            }
+
+            componentDidUpdate() {
+                console.log('componentDidUpdate: ');
+
             }
 
             handleAddFriend() {
                 this.setState((currentState)=>{
                     return {
-                        friends: currentState.friends.concat([this.state.input]),
+                        friends: currentState.friends.concat([{name: currentState.input, active: true}]),
                         input: ''
                     }
+                })
+            }
+
+            handleClearAll() {
+                this.setState({
+                    friends: []
                 })
             }
 
@@ -60,7 +106,20 @@
 
                 this.setState((currentState)=>{
                     return {
-                        friends: currentState.friends.filter((friend)=> friend !== name)
+                        friends: currentState.friends.filter((friend)=> friend.name !== name)
+                    }
+                })
+            }
+
+            handleToggleFriend(name) {
+                this.setState((currentState)=>{
+                    return {
+                        friends: currentState.friends.map((friend)=> {
+                            if (friend.name === name) {
+                                friend.active = !friend.active;
+                            } 
+                            return friend;  
+                        })
                     }
                 })
             }
@@ -76,6 +135,7 @@
             }
 
             render () {
+                console.log('render: ');
                 return (
                     <div id="container">
 
@@ -85,9 +145,11 @@
                         onChange={this.updateInput}
                      />
                      <button onClick={this.handleAddFriend}> Submit </button>
+                     <button onClick={this.handleClearAll} > Clear all</button>
                         <FriendsList  
                             list={this.state.friends} 
                             onRemoveFriend = {this.handleRemoveFriend}
+                            onToggleFriend = {this.handleToggleFriend}
                         />
                     </div>
                 );
