@@ -15,7 +15,57 @@
 <body>
     <div id="app"></div>
 
+    <script>
+        window.API = {
+            fetchFriends() {
+                return new Promise((res, rej) => {
+                    const friends = [
+                        { name: 'Ann', active: true },
+                        { name: 'Jamal', active: true },
+                        { name: 'Carry', active: true }
+                    ];
+                    setTimeout(() => {
+                        return res(friends);
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+
     <script type="text/babel">
+
+        class Loading extends React.Component {
+            constructor(props){
+                super(props)
+
+                this.state = {
+                    text: 'Loading'
+                }
+            }
+
+            componentDidMount() {
+                const stopper = this.state.text + '...';
+
+                this.interval = window.setInterval(()=>{
+                    this.state.text === stopper ? this.setState({
+                            text: 'Loading'
+                    }) : this.setState((currentState)=>{
+                        return {
+                            text: currentState.text + '.'
+                        }
+                    })
+
+                }, 300)
+            }
+
+            componentWillUnmount() {
+                window.clearInterval(this.interval);
+            }
+
+            render () {
+                return <p>{this.state.text}</p>
+            }
+        }
 
         function FriendsList(props) {
 
@@ -64,8 +114,9 @@
                 super(props)
 
                 this.state = {
-                    friends: [{name: 'Ann', active: true}, {name: 'Jamal', active: true},{name: 'Carry', active: true}],
-                    input: ''
+                    friends: [],
+                    input: '',
+                    loading: true
                 };
 
                 this.updateInput = this.updateInput.bind(this);
@@ -78,12 +129,24 @@
             }
 
             componentDidMount() {
-                console.log('--componentDidMount--');
+
+                API.fetchFriends()
+                    .then((friends)=>{
+                        this.setState({
+                            friends,
+                            loading: false
+                        })
+                    })
 
             }
 
             componentDidUpdate() {
                 console.log('componentDidUpdate: ');
+
+            }
+
+            componentWillUnmount(){
+                console.log('componentWillUnmount: ');
 
             }
 
@@ -135,7 +198,12 @@
             }
 
             render () {
-                console.log('render: ');
+
+                if (this.state.loading === true) {
+                    return <Loading />
+                }
+
+
                 return (
                     <div id="container">
 
