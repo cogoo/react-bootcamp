@@ -17,38 +17,36 @@
 
     <script type="text/babel">
 
-        const name = 'Colin Ogoo';
-        const handle = '@c_ogoo';
-
-
-        function NameComponent(props) {
-            // object representation of a dom node
-            // return nameElement = React.createElement(
-            //     'h1',
-            //     null,
-            //     props.name
-            // );
-            return <h1>{props.name}</h1>
-        };
-
-        function HandleComponent(props) {
-            // return handleElement = React.createElement(
-            //     'h3',
-            //     null,
-            //     props.handle
-            // );
-            return <h3>{props.handle}</h3>
-        };
-
-        function App() {
+        function FriendsList(props) {
             return (
-                <div id="container">
-                    <NameComponent name={name} />
-                    <HandleComponent handle={handle} />
-                </div>
-            );
+                <ul>
+                    {props.list.map((name)=> (
+                        <li key={name} >
+                            {name}
+                        </li>
+                    ))}
+                </ul>
+            )
         }
 
+        class App extends React.Component {
+
+            constructor(props) {
+                super(props)
+
+                this.state = {
+                    friends: ['Ann', 'Tommy', 'Jamal']
+                }
+            }
+
+            render () {
+                return (
+                    <div id="container">
+                        <FriendsList list={this.state.friends} />
+                    </div>
+                );
+            }
+        }
 
         ReactDOM.render(
             <App />,
