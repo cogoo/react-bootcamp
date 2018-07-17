@@ -23,6 +23,9 @@
                     {props.list.map((name)=> (
                         <li key={name} >
                             {name}
+                            <span>
+                                <button onClick={() => props.onRemoveFriend(name)} >Remove</button>
+                            </span>
                         </li>
                     ))}
                 </ul>
@@ -35,14 +38,57 @@
                 super(props)
 
                 this.state = {
-                    friends: ['Ann', 'Tommy', 'Jamal']
-                }
+                    friends: ['Ann', 'Tommy', 'Jamal'],
+                    input: ''
+                };
+
+                this.handleAddFriend = this.handleAddFriend.bind(this);
+                this.handleRemoveFriend = this.handleRemoveFriend.bind(this);
+                this.updateInput = this.updateInput.bind(this);
+            }
+
+            handleAddFriend() {
+                this.setState((currentState)=>{
+                    return {
+                        friends: currentState.friends.concat([this.state.input]),
+                        input: ''
+                    }
+                })
+            }
+
+            handleRemoveFriend(name) {
+
+                this.setState((currentState)=>{
+                    return {
+                        friends: currentState.friends.filter((friend)=> friend !== name)
+                    }
+                })
+            }
+
+            updateInput(e) {
+                const value = e.target.value;
+
+                this.setState(()=>{
+                    return {
+                        input: value
+                    }
+                })
             }
 
             render () {
                 return (
                     <div id="container">
-                        <FriendsList list={this.state.friends} />
+
+                    <input type="text"
+                        placeholder="try Jamie"
+                        value={this.state.input}
+                        onChange={this.updateInput}
+                     />
+                     <button onClick={this.handleAddFriend}> Submit </button>
+                        <FriendsList  
+                            list={this.state.friends} 
+                            onRemoveFriend = {this.handleRemoveFriend}
+                        />
                     </div>
                 );
             }
